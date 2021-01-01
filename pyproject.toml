@@ -1,0 +1,38 @@
+[tool.poetry]
+name = "santa-2020"
+version = "0.1.0"
+description = ""
+authors = ["Masahiro Wada <argon.argon.argon@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+kaggle-environments = "1.7.3"
+numpy = "^1.19.4"
+returns = "^0.15.0"
+
+[tool.poetry.dev-dependencies]
+kkt = {path = "../kkt"}
+jupyter = "^1.0.0"
+jupytext = "^1.5.1"
+pppiv = "^0.1.2"
+mypy = "^0.790"
+
+[tool.kkt]
+enable_constraint = false
+enable_git_tag = false
+extra_dependencies = []
+
+[tool.kkt.meta_data]
+code_file = "runner/create_submission.ipynb"
+competition = "santa-2020"
+competition_sources = ["santa-2020"]
+dataset_sources = []
+enable_gpu = false
+enable_internet = true
+is_private = true
+kernel_type = "notebook"
+slug = "santa-2020"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
