@@ -1,6 +1,10 @@
 from __future__ import annotations
+
+from santa_2020.agents.random import AGENT_KEY
 from .common import *
 from .agent import Agent, register
+
+AGENT_KEY = "thompson"
 
 #from https://www.kaggle.com/aatiffraz/a-beginner-s-approach-to-performance-analysis
 @bandit_stats
@@ -17,4 +21,4 @@ def agent(stats: BanditStats) -> int:
         _, best_idx = max([(calc_score(bandit), i) for i, bandit in enumerate(stats.bandits)])
         return best_idx
 
-register(Agent("thompson", agent))
+register(AGENT_KEY, lambda resource, comment: Agent(AGENT_KEY, agent, resource, comment))

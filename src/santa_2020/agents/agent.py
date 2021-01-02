@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from returns.result import ResultE, safe
 from dataclasses import dataclass
-from typing import Callable
+from typing import Callable, Optional, Any
 import inspect
 
 from santa_2020 import agents
@@ -12,6 +12,8 @@ from santa_2020 import agents
 class Agent:
     key: str
     code: str | Callable
+    resource: Optional[dict[Any, Any]]
+    comment: Optional[str]
 
 
 @safe
@@ -36,15 +38,17 @@ def try_to_submit_source(agent: Agent) -> ResultE[str]:
 def _init_agent_registry() -> tuple[Callable[[Agent], None], Callable[[str], Agent]]:
     _registry = {}
 
-    def _register_agent(agent: Agent):
+    def _register_agent_constructor(key: str, agent: Agent):
         nonlocal _registry
-        _registry[agent.key] = agent
+        _registry[key] = agent
 
-    def _get_agent(key: str) -> Agent:
+    def _construct_agent(
+        key: str, resource: Optional[dict[Any, Any]] = None, comment: Optional[str] = None
+    ) -> Agent:
         nonlocal _registry
-        return _registry[key]
+        return _registry[key](resource, comment)
 
-    return _register_agent, _get_agent
+    return _register_agent_constructor, _construct_agent
 
 
-register, get = _init_agent_registry()
+register, construct = _init_agent_registry()

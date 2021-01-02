@@ -1,5 +1,6 @@
 from .agent import Agent, register
 
+AGENT_KEY = "random"
 
 def agent(obs, conf):
     import random
@@ -7,4 +8,4 @@ def agent(obs, conf):
     return random.randrange(conf.banditCount - 1)
 
 
-register(Agent("random", agent))
+register(AGENT_KEY, lambda resource, comment: Agent(AGENT_KEY, agent, resource, comment))

@@ -1,4 +1,4 @@
-from .agent import Agent, try_to_submit_source, register, get
+from .agent import Agent, try_to_submit_source, register, construct
 from . import return_0
 from . import vegas_pull
 from . import ucb_decay

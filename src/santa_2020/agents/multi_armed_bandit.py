@@ -2,6 +2,8 @@ from __future__ import annotations
 from .common import *
 from .agent import Agent, register
 
+AGENT_KEY = "multi_armed_bandit"
+
 # from https://www.kaggle.com/ilialar/simple-multi-armed-bandit
 @bandit_stats
 def agent(stats: BanditStats) -> int:
@@ -33,4 +35,4 @@ def agent(stats: BanditStats) -> int:
         return int(np.argmax(proba))
 
 
-register(Agent("multi_armed_bandit", agent))
+register(AGENT_KEY, lambda resource, comment: Agent(AGENT_KEY, agent, resource, comment))
