@@ -1,6 +1,6 @@
-from .agent import Agent
+from .agent import Agent, register
 
 def agent(observation, configuration):
     return observation.step % configuration.banditCount
 
-round_robin = Agent("round_robin", agent)
+register(Agent("round_robin", agent))

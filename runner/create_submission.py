@@ -18,12 +18,13 @@
 #%autoreload 2
 
 #%%
+import os
 from santa_2020 import simulate, agents, io
 
 #%%
-target_agents = [agents.vegas_pull]
-enemy_agents = [agents.random, agents.round_robin]
-results = simulate.run(target_agents, enemy_agents)
+target_agents = [agents.get(os.environ["AGENT_KEY"])]
+enemy_agents = [agents.get("random"), agents.get("round_robin")]
+results = simulate.run(target_agents, enemy_agents).unwrap()
 
 #%%
 for k, ret in results.items():
@@ -31,4 +32,4 @@ for k, ret in results.items():
     ret.env.render(mode="ipython", width=800, height=500)
 
 # %%
-io.save_submit(agents.vegas_pull)
+io.save_submit(target_agents[0])

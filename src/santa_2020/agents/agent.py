@@ -5,6 +5,8 @@ from dataclasses import dataclass
 from typing import Callable
 import inspect
 
+from santa_2020 import agents
+
 
 @dataclass(frozen=True)
 class Agent:
@@ -29,3 +31,20 @@ def try_to_submit_source(agent: Agent) -> ResultE[str]:
     return try_to_str(agent).map(
         lambda agent_source_lines: f"{common_source_lines}\n\n{agent_source_lines}"
     )
+
+
+def _init_agent_registry() -> tuple[Callable[[Agent], None], Callable[[str], Agent]]:
+    _registry = {}
+
+    def _register_agent(agent: Agent):
+        nonlocal _registry
+        _registry[agent.key] = agent
+
+    def _get_agent(key: str) -> Agent:
+        nonlocal _registry
+        return _registry[key]
+
+    return _register_agent, _get_agent
+
+
+register, get = _init_agent_registry()

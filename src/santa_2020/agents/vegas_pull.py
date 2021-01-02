@@ -1,6 +1,6 @@
 from __future__ import annotations
 from .common import *
-from .agent import Agent
+from .agent import Agent, register
 
 # from https://www.kaggle.com/sirishks/pull-vegas-slot-machines
 @bandit_stats
@@ -18,4 +18,4 @@ def agent(stats: BanditStats) -> int:
         return best_idx
 
 
-vegas_pull = Agent("vegas_pull", agent)
+register(Agent("vegas_pull", agent))
