@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-from santa_2020.agents.random import AGENT_KEY
 from .common import *
 from .agent import Agent, register
 
 AGENT_KEY = "vegas_pull"
 
 # from https://www.kaggle.com/sirishks/pull-vegas-slot-machines
-@bandit_stats
-def agent(stats: BanditStats) -> int:
+@context
+def agent(stats: BanditStats, env: Environment) -> int:
     import random
 
     def calc_score(bandit: Bandit) -> float:

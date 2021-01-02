@@ -42,7 +42,7 @@ def _get_result_key(lh: Agent, rh: Agent) -> tuple[str, str]:
 def _should_skip(
     result: dict[tuple[str, str], Any], result_key: tuple[str, str]
 ) -> bool:
-    return result_key in result_key or result_key[0] == result_key[1]
+    return result_key in result or result_key[0] == result_key[1]
 
 
 @safe

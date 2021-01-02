@@ -5,18 +5,18 @@ from .agent import Agent, register
 AGENT_KEY = "multi_armed_bandit"
 
 # from https://www.kaggle.com/ilialar/simple-multi-armed-bandit
-@bandit_stats
-def agent(stats: BanditStats) -> int:
+@context
+def agent(stats: BanditStats, env: Environment) -> int:
     import numpy as np
 
     if stats.step == 0:
-        stats.store["state"] = np.ones((2, len(stats.bandits)))
+        env.store["state"] = np.ones((2, len(stats.bandits)))
     else:
         assert stats.last_self_action is not None
         assert stats.last_opp_action is not None
         assert stats.last_reward is not None
 
-        state = stats.store["state"]
+        state = env.store["state"]
         idx = int(stats.last_reward == 0)
         state[idx, stats.last_self_action] += 1.0
 
@@ -30,7 +30,7 @@ def agent(stats: BanditStats) -> int:
     if stats.step < len(stats):
         return stats.step
     else:
-        state = stats.store["state"]
+        state = env.store["state"]
         proba = np.random.beta(state[0], state[1])
         return int(np.argmax(proba))
 

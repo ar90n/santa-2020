@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import pickle
+from io import BytesIO
+import base64
 from functools import wraps
 from typing import Callable, Optional, Any
 from dataclasses import dataclass
@@ -23,6 +26,31 @@ def _get_last_actions(obs: Observation) -> tuple[int, int]:
     return tuple([obs.lastActions[idx] for idx in _calc_agent_indice(obs.agentIndex)])
 
 
+def serialize(obj: Any) -> str:
+    return base64.b64encode(pickle.dumps(obj))
+
+
+def deserialize(serialized: str) -> Any:
+    return pickle.loads(base64.b64decode(serialized))
+
+
+class Environment:
+    _resource: dict[str, Any]
+    _store: dict[Any, Any]
+
+    def __init__(self, serialized_resource: dict[str, str]) -> None:
+        self._store = {}
+        self._resource = {k: deserialize(v) for k, v in serialized_resource.items()}
+
+    @property
+    def resource(self) -> dict[str, Any]:
+        return self._resource
+
+    @property
+    def store(self) -> dict[Any, Any]:
+        return self._store
+
+
 class BanditStats:
     _bandits: list[Bandit]
     _last_self_action: Optional[int]
@@ -31,7 +59,6 @@ class BanditStats:
     _decay_rate: float
     _reward: float
     _step: int
-    _store: dict[Any, Any]
 
     def __init__(self, conf: Configuration) -> None:
         self._bandits = [Bandit(0, 0, 0) for _ in range(conf.banditCount)]
@@ -41,7 +68,6 @@ class BanditStats:
         self._decay_rate = conf.decayRate
         self._reward = 0.0
         self._step = 0
-        self._store = {}
 
     def update(self, obs: Observation) -> None:
         if obs.step == 0:
@@ -91,18 +117,15 @@ class BanditStats:
     def step(self) -> int:
         return self._step
 
-    @property
-    def store(self) -> dict[Any, Any]:
-        return self._store
-
     def __len__(self) -> int:
         return len(self._bandits)
 
 
-def bandit_stats(
-    agent_func: Callable[[BanditStats], int]
+def context(
+    agent_func: Callable[[BanditStats, Environment], int]
 ) -> Callable[[Observation, Configuration], int]:
     stats: Optional[BanditStats] = None
+    env = Environment({})
 
     @wraps(agent_func)
     def wrapper(obs: Observation, conf: Configuration) -> int:
@@ -112,7 +135,7 @@ def bandit_stats(
         else:
             stats.update(obs)
 
-        return agent_func(stats)
+        return agent_func(stats, env)
 
     return wrapper
 

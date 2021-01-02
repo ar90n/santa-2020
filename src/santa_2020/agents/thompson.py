@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-from santa_2020.agents.random import AGENT_KEY
 from .common import *
 from .agent import Agent, register
 
 AGENT_KEY = "thompson"
 
 #from https://www.kaggle.com/aatiffraz/a-beginner-s-approach-to-performance-analysis
-@bandit_stats
-def agent(stats: BanditStats) -> int:
+@context
+def agent(stats: BanditStats, env: Environment) -> int:
     import math
     import random
     def calc_score(bandit: Bandit) -> float:

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from .common import serialize
 from returns.result import ResultE, safe
 from dataclasses import dataclass
 from typing import Callable, Optional, Any
@@ -39,10 +40,10 @@ def try_to_submit_source(agent: Agent) -> ResultE[str]:
         comment_lines = _comment_out(comment)
         return f"{source_lines}\n\n{comment_lines}"
 
-    def _add_resource(source_lines: str, resource: Optional[dict[str, str]]) -> str:
+    def _add_resource(source_lines: str, resource: Optional[dict[str, Any]]) -> str:
         if resource is None:
             return source_lines
-        return f"{source_lines}\n\n_RESOURCE={str(resource)}"
+        return f"{source_lines}\n\n_RESOURCE={serialize(resource)}"
 
     common_source_lines = inspect.getsource(common)
     return (

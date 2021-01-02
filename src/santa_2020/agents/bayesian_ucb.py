@@ -5,8 +5,8 @@ from .agent import Agent, register
 AGENT_KEY = "bayesian_ucb"
 
 # from https://www.kaggle.com/xhlulu/santa-2020-ucb-and-bayesian-ucb-starter
-@bandit_stats
-def agent(stats: BanditStats) -> int:
+@context
+def agent(stats: BanditStats, env: Environment) -> int:
     from scipy.stats import beta
 
     c = 3

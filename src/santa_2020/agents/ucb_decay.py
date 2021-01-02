@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-from santa_2020.agents.random import AGENT_KEY
 from .common import *
 from .agent import Agent, register
 
 AGENT_KEY = "ucb_decay"
 
 # from https://www.kaggle.com/xhlulu/santa-2020-ucb-and-bayesian-ucb-starter
-@bandit_stats
-def agent(stats: BanditStats) -> int:
+@context
+def agent(stats: BanditStats, env: Environment) -> int:
     import math
 
     def calc_score(bandit: Bandit) -> float:
