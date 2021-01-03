@@ -38,9 +38,9 @@ class Environment:
     _resource: dict[str, Any]
     _store: dict[Any, Any]
 
-    def __init__(self, serialized_resource: dict[str, str]) -> None:
+    def __init__(self, resource: dict[str, Any]) -> None:
         self._store = {}
-        self._resource = {k: deserialize(v) for k, v in serialized_resource.items()}
+        self._resource = resource
 
     @property
     def resource(self) -> dict[str, Any]:
@@ -125,7 +125,7 @@ def context(
     agent_func: Callable[[BanditStats, Environment], int]
 ) -> Callable[[Observation, Configuration], int]:
     stats: Optional[BanditStats] = None
-    env = Environment({})
+    env = Environment(deserialize(_RESOURCE))
 
     @wraps(agent_func)
     def wrapper(obs: Observation, conf: Configuration) -> int:
@@ -139,5 +139,6 @@ def context(
 
     return wrapper
 
+_RESOURCE = "gAN9cQAu"
 
 # Add agent function here

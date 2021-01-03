@@ -27,32 +27,37 @@ def try_to_str(agent: Agent) -> str:
     raise ValueError("failed to convert code to str.")
 
 
-def _comment_out(comment: str) -> str:
-    return "\n".join([f"# {l}" for l in comment.split("\n")])
-
-
 def try_to_submit_source(agent: Agent) -> ResultE[str]:
     from . import common
 
-    def _add_comment(source_lines: str, comment: Optional[str]) -> str:
-        if comment is None:
-            return source_lines
-        comment_lines = _comment_out(comment)
-        return f"{source_lines}\n\n{comment_lines}"
+    def _comment_out(comment: str) -> str:
+        return "\n".join([f"# {l}" for l in comment.split("\n")])
 
-    def _add_resource(source_lines: str, resource: Optional[dict[str, Any]]) -> str:
+    def _get_comment_source_lines(comment: Optional[str]) -> str:
+        if comment is None:
+            return ""
+        return _comment_out(comment)
+
+    def _get_resource_source_lines(resource: Optional[dict[str, Any]]) -> str:
         if resource is None:
-            return source_lines
-        return f"{source_lines}\n\n_RESOURCE={serialize(resource)}"
+            return ""
+        return f"_RESOURCE={serialize(resource)}"
+
+    def _get_submit_source_lines(
+        common: str, comment: str, resource: str, agent: str
+    ) -> str:
+        return f"{common}\n\n{comment}\n\n{resource}\n\n{agent}"
 
     common_source_lines = inspect.getsource(common)
-    return (
-        try_to_str(agent)
-        .map(
-            lambda agent_source_lines: f"{common_source_lines}\n\n{agent_source_lines}"
+    comment_source_lines = _get_comment_source_lines(agent.comment)
+    resource_source_lines = _get_resource_source_lines(agent.resource)
+    return try_to_str(agent).map(
+        lambda agent_source_lines: _get_submit_source_lines(
+            common_source_lines,
+            comment_source_lines,
+            resource_source_lines,
+            agent_source_lines,
         )
-        .map(lambda source_lines: _add_resource(source_lines, agent.resource))
-        .map(lambda source_lines: _add_comment(source_lines, agent.comment))
     )
 
 

@@ -10,6 +10,9 @@ kaggle-environments = "1.7.3"
 numpy = "^1.19.4"
 returns = "^0.15.0"
 scipy = "^1.6.0"
+scikit-learn = "0.23.2"
+pandas = "^1.1.0"
+pyarrow = "^2.0.0"
 
 [tool.poetry.dev-dependencies]
 kkt = {path = "../kkt"}
@@ -27,7 +30,7 @@ extra_dependencies = []
 code_file = "runner/create_submission.ipynb"
 competition = "santa-2020"
 competition_sources = ["santa-2020"]
-dataset_sources = []
+dataset_sources = ["ar90ngas/my-santa-2020-data"]
 enable_gpu = false
 enable_internet = true
 is_private = true
