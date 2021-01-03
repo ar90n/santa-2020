@@ -19,29 +19,46 @@
 
 #%%
 # https://www.kaggle.com/lebroschar/1000-greedy-decision-tree-model
+import sys
+from typing import List, Dict, Any
 from pathlib import Path
 import pandas as pd
 import pickle
 import sklearn.tree as skt
-
-from santa_2020.util import get_input_dir
+from omegaconf import OmegaConf
+from dataclasses import MISSING, dataclass, field
 
 #%%
-FUDGE_FACTOR = 0.99
-VERBOSE = False
-DATA_FILE = get_input_dir() / "sample-training-data" / "training_data_201223.parquet"
-TRAIN_FEATS = ["round_num", "n_pulls_self", "n_success_self", "n_pulls_opp"]
-TARGET_COL = "payout"
+@dataclass
+class TableModelConfig:
+    data_file: str = MISSING
+    train_feats: List[str] = MISSING
+    target: str = MISSING
+    model_name: str = MISSING
+    train_params: Dict[Any, Any] = field(default_factory=dict)
+
+
+#%%
+try:
+    yaml_path = sys.argv[1]
+except IndexError:
+    print(
+        "usage: python train_decision_tree.py <path to configguraiton yaml>",
+        file=sys.stderr,
+    )
+    sys.exit(-1)
+
+conf = OmegaConf.create(TableModelConfig(**OmegaConf.load(yaml_path)))
 
 #%%
 def make_model():
     """Builds a decision tree model based on stored trainingd data"""
-    data = pd.read_parquet(DATA_FILE)
-    model = skt.DecisionTreeRegressor(min_samples_leaf=40)
-    model.fit(data[TRAIN_FEATS], data[TARGET_COL])
+    data = pd.read_parquet(conf.data_file)
+    model = skt.DecisionTreeRegressor(**conf.train_params)
+    model.fit(data[conf.train_feats], data[conf.target])
     return model
 
 
 #%%
 model = make_model()
-Path("simple_decitoin_tree_regression_model.pickle").write_bytes(pickle.dumps(model))
+Path(f"{conf.model_name}.pickle").write_bytes(pickle.dumps(model))
