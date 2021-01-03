@@ -4,12 +4,13 @@ from typing import Optional, Any
 from returns.io import impure_safe, IOResultE
 from .agents import Agent, try_to_submit_source
 from pathlib import Path
-from .util import get_my_data_dir
 import yaml
 import pickle
 
+from santa_2020 import agents
 
-def load_conf(filename: str) -> dict:
+
+def load_agent_conf(config_path: Path) -> dict:
     def _parse_resource(org_resource: dict[str, Any]) -> dict[str, Any]:
         def _parse(key: str, value: Any) -> Any:
             if "@" in key:
@@ -23,14 +24,13 @@ def load_conf(filename: str) -> dict:
 
         return dict(_parse(k, v) for k, v in org_resource.items())
 
-    conf_path = get_my_data_dir() / filename
-    with conf_path.open("r") as fp:
+    with config_path.open("r") as fp:
         conf = yaml.load(fp)
-    if "resource" in conf["agent"]:
-        agent = conf["agent"]
-        agent["resource"] = _parse_resource(agent["resource"])
 
-    return conf
+    agent = conf["agent"]
+    agent["resource"] = _parse_resource(agent.get("resource", {}))
+    agent["comment"] = agent.get("comment")
+    return agent
 
 
 def save_submit(agent: Agent, filename: Optional[str] = None) -> IOResultE[int]:

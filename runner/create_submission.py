@@ -22,13 +22,11 @@ import os
 from santa_2020 import simulate, agents, io, util
 
 #%%
-conf_filename = os.environ["CONF_FILENAME"]
-conf = io.load_conf(conf_filename)
+config_filename = os.environ["CONFIG_FILENAME"]
+config_path = util.get_my_data_dir() / config_filename
+agent_config = io.load_agent_conf(config_path)
 
-key = conf["agent"]["key"]
-resource = conf["agent"].get("resource")
-comment = conf["agent"].get("comment")
-target_agents = [agents.construct(key, resource=resource, comment=comment)]
+target_agents = [agents.construct(**agent_config)]
 enemy_agents = [agents.construct("random"), agents.construct("round_robin")]
 results = simulate.run(target_agents, enemy_agents).unwrap()
 
