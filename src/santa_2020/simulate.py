@@ -36,13 +36,15 @@ def _swap_agents_if_need(lh: Agent, rh: Agent) -> tuple[Agent, Agent]:
 
 
 def _get_result_key(lh: Agent, rh: Agent) -> tuple[str, str]:
-    return (lh.key, rh.key)
+    lh_key = lh.key
+    if lh.name is not None:
+        lh_key = f"{lh_key}_{lh.name}"
 
+    rh_key = rh.key
+    if rh.name is not None:
+        rh_key = f"{rh_key}_{rh.name}"
 
-def _should_skip(
-    result: dict[tuple[str, str], Any], result_key: tuple[str, str]
-) -> bool:
-    return result_key in result or result_key[0] == result_key[1]
+    return (lh_key, rh_key)
 
 
 @safe
@@ -64,13 +66,13 @@ def run(target_agents: Set[Agent], enemy_agents: Set[Agent] = set()):
     result_futures = {}
     with ProcessPoolExecutor() as executor:
         for lh, rh in product(target_agents, chain(target_agents, enemy_agents)):
+            if lh == rh:
+                continue
+
             lh, rh = _swap_agents_if_need(lh, rh)
             result_key = _get_result_key(lh, rh)
-
-            if _should_skip(result_futures, result_key):
-                continue
-            lh_source = source_map[result_key[0]]
-            rh_source = source_map[result_key[1]]
+            lh_source = source_map[lh.key]
+            rh_source = source_map[rh.key]
             result_futures[result_key] = executor.submit(
                 _run_inner, lh_source, rh_source
             )

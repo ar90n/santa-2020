@@ -15,6 +15,9 @@ pandas = "^1.1.0"
 pyarrow = "^2.0.0"
 PyYAML = "^5.3.1"
 omegaconf = "^2.0.5"
+tqdm = "^4.55.1"
+lightgbm = "3.1.1"
+catboost = "^0.24.4"
 
 [tool.poetry.dev-dependencies]
 kkt = {path = "../kkt"}

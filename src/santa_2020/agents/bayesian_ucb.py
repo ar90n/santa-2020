@@ -27,4 +27,4 @@ def agent(stats: BanditStats, env: Environment) -> int:
         return best_idx
 
 
-register(AGENT_KEY, lambda resource, comment: Agent(AGENT_KEY, agent, resource, comment))
+register(AGENT_KEY, lambda resource, comment, name: Agent(AGENT_KEY, agent, resource, comment, name))

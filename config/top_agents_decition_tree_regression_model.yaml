@@ -1,0 +1,5 @@
+agent:
+  key: greedy_decision_tree
+  resource:
+    model@pickle: "/kaggle/input/my-santa-2020-data/top_agents_decition_tree_regression_model.pickle"
+  name: top_agents_decition_tree

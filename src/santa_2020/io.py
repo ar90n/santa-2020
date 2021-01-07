@@ -1,13 +1,27 @@
 from __future__ import annotations
 
 from typing import Optional, Any
+from pandas.io.parquet import read_parquet
 from returns.io import impure_safe, IOResultE
 from .agents import Agent, try_to_submit_source
 from pathlib import Path
 import yaml
 import pickle
+import pandas as pd
 
 from santa_2020 import agents
+
+
+def load_dataset(
+    train_folds: list[Path], val_folds: list[Path],
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    train_set = pd.concat(
+        [pd.read_parquet(p) for p in train_folds], axis=0, ignore_index=True
+    )
+    val_set = pd.concat(
+        [pd.read_parquet(p) for p in val_folds], axis=0, ignore_index=True
+    )
+    return (train_set, val_set)
 
 
 def load_agent_conf(config_path: Path) -> dict:
@@ -25,7 +39,7 @@ def load_agent_conf(config_path: Path) -> dict:
         return dict(_parse(k, v) for k, v in org_resource.items())
 
     with config_path.open("r") as fp:
-        conf = yaml.load(fp)
+        conf = yaml.safe_load(fp)
 
     agent = conf["agent"]
     agent["resource"] = _parse_resource(agent.get("resource", {}))

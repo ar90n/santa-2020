@@ -1,0 +1,9 @@
+data_file: "/kaggle/input/sample-training-data/training_data_201223.parquet"
+train_feats:
+  - n_pulls_self
+  - n_success_self
+  - n_pulls_opp
+target: payout
+model_name: simple_decitoin_tree_regression_model_3
+train_params:
+  min_samples_leaf: 80

@@ -9,5 +9,5 @@ def agent(observation, configuration):
 
 
 register(
-    AGENT_KEY, lambda resource, comment: Agent(AGENT_KEY, agent, resource, comment)
+    AGENT_KEY, lambda resource, comment, name: Agent(AGENT_KEY, agent, resource, comment, name)
 )

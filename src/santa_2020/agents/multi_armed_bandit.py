@@ -35,4 +35,6 @@ def agent(stats: BanditStats, env: Environment) -> int:
         return int(np.argmax(proba))
 
 
-register(AGENT_KEY, lambda resource, comment: Agent(AGENT_KEY, agent, resource, comment))
+register(
+    AGENT_KEY, lambda resource, comment: Agent(AGENT_KEY, agent, resource, comment)
+)

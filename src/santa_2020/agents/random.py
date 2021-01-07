@@ -9,6 +9,4 @@ def agent(obs, conf):
     return random.randrange(conf.banditCount - 1)
 
 
-register(
-    AGENT_KEY, lambda resource, comment: Agent(AGENT_KEY, agent, resource, comment)
-)
+register(AGENT_KEY, lambda resource, comment, name: Agent(AGENT_KEY, agent, resource, comment, name))

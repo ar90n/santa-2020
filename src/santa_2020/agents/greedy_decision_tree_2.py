@@ -3,7 +3,7 @@ from __future__ import annotations
 from .common import *
 from .agent import Agent, register
 
-AGENT_KEY = "greedy_decision_tree"
+AGENT_KEY = "greedy_decision_tree_2"
 
 # from https://www.kaggle.com/lebroschar/1000-greedy-decision-tree-model
 @context
@@ -12,24 +12,22 @@ def agent(stats: BanditStats, env: Environment) -> int:
 
     model = env.resource["model"]
     if stats.step == 0:
-        features = np.zeros((len(stats.bandits), 4))
+        features = np.zeros((len(stats.bandits), 3))
         for i, bandit in enumerate(stats.bandits):
-            features[i, 1] = bandit.n_self_pulls
-            features[i, 2] = bandit.n_wins
-            features[i, 3] = bandit.n_opp_pulls
+            features[i, 0] = bandit.n_self_pulls
+            features[i, 1] = bandit.n_wins
+            features[i, 2] = bandit.n_opp_pulls
         env.store["predicts"] = model.predict(features)
     else:
         predicts = env.store["predicts"]
         predicts[[stats.last_opp_action, stats.last_self_action]] = model.predict(
             [
                 [
-                    stats.step,
                     stats.bandits[stats.last_opp_action].n_self_pulls,
                     stats.bandits[stats.last_opp_action].n_wins,
                     stats.bandits[stats.last_opp_action].n_opp_pulls,
                 ],
                 [
-                    stats.step,
                     stats.bandits[stats.last_self_action].n_self_pulls,
                     stats.bandits[stats.last_self_action].n_wins,
                     stats.bandits[stats.last_self_action].n_opp_pulls,

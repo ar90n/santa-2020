@@ -1,0 +1,4 @@
+agent:
+  key: greedy_decision_tree_2
+  resource:
+    model@pickle: "/kaggle/input/my-santa-2020-data/minimum_detection_tree_regression_model_40.pickle"

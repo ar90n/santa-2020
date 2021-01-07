@@ -15,6 +15,7 @@ class Agent:
     code: str | Callable
     resource: Optional[dict[Any, Any]]
     comment: Optional[str]
+    name: Optional[str]
 
 
 @safe
@@ -72,9 +73,10 @@ def _init_agent_registry() -> tuple[Callable[[Agent], None], Callable[[str], Age
         key: str,
         resource: Optional[dict[Any, Any]] = None,
         comment: Optional[str] = None,
+        name: Optional[str] = None,
     ) -> Agent:
         nonlocal _registry
-        return _registry[key](resource, comment)
+        return _registry[key](resource, comment, name)
 
     return _register_agent_constructor, _construct_agent
 

@@ -8,4 +8,7 @@ def agent(obs, conf):
     return 0
 
 
-register(AGENT_KEY, lambda resource, comment: Agent(AGENT_KEY, agent, resource, comment))
+
+register(
+    AGENT_KEY, lambda resource, comment: Agent(AGENT_KEY, agent, resource, comment)
+)
