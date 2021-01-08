@@ -15,13 +15,18 @@ from santa_2020 import agents
 def load_dataset(
     train_folds: list[Path], val_folds: list[Path],
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
-    train_set = pd.concat(
+    train_df = pd.concat(
         [pd.read_parquet(p) for p in train_folds], axis=0, ignore_index=True
     )
-    val_set = pd.concat(
+    train_df["n_pulls"] = train_df["n_pulls_self"] + train_df["n_pulls_opp"]
+    train_df["decay"] = train_df["n_pulls"].rpow(0.97)
+
+    val_df = pd.concat(
         [pd.read_parquet(p) for p in val_folds], axis=0, ignore_index=True
     )
-    return (train_set, val_set)
+    val_df["n_pulls"] = val_df["n_pulls_self"] + val_df["n_pulls_opp"]
+    val_df["decay"] = val_df["n_pulls"].rpow(0.97)
+    return (train_df, val_df)
 
 
 def load_agent_conf(config_path: Path) -> dict:

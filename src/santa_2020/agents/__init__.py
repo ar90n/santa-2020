@@ -10,4 +10,5 @@ from . import round_robin
 from . import following
 from . import greedy_decision_tree
 from . import greedy_decision_tree_2
+from . import greedy_decision_tree_3
 from . import ucb_decision_tree
