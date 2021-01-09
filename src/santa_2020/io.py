@@ -19,12 +19,22 @@ def load_dataset(
         [pd.read_parquet(p) for p in train_folds], axis=0, ignore_index=True
     )
     train_df["n_pulls"] = train_df["n_pulls_self"] + train_df["n_pulls_opp"]
+    train_df["n_loss_self"] = train_df["n_pulls_self"] - train_df["n_success_self"]
+    train_df["success_rate"] = train_df["n_success_self"] / train_df["n_pulls_self"]
+    train_df["self_opp_pulls_rate"] = train_df["n_pulls_self"] / train_df["n_pulls_opp"]
+    train_df["pull_rate_self"] = train_df["n_pulls_self"] / train_df["round_num"]
+    train_df["pull_rate_opp"] = train_df["n_pulls_opp"] / train_df["round_num"]
     train_df["decay"] = train_df["n_pulls"].rpow(0.97)
 
     val_df = pd.concat(
         [pd.read_parquet(p) for p in val_folds], axis=0, ignore_index=True
     )
     val_df["n_pulls"] = val_df["n_pulls_self"] + val_df["n_pulls_opp"]
+    val_df["n_loss_self"] = val_df["n_pulls_self"] - val_df["n_success_self"]
+    val_df["success_rate"] = val_df["n_success_self"] / val_df["n_pulls_self"]
+    val_df["self_opp_pulls_rate"] = val_df["n_pulls_self"] / val_df["n_pulls_opp"]
+    val_df["pull_rate_self"] = val_df["n_pulls_self"] / val_df["round_num"]
+    val_df["pull_rate_opp"] = val_df["n_pulls_opp"] / val_df["round_num"]
     val_df["decay"] = val_df["n_pulls"].rpow(0.97)
     return (train_df, val_df)
 

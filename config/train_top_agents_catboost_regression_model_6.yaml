@@ -10,15 +10,12 @@ train_feats:
   - n_pulls_self
   - n_success_self
   - n_pulls_opp
-  - n_pulls
-  - n_loss_self
-  - success_rate
-  - self_opp_pulls_rate
-  - pull_rate_self
-  - pull_rate_opp
-  - decay
 target: payout
-model_name: top_agents_catboost_regression_model_add_feats
+model_name: top_agents_catboost_regression_model_6
 construct_params:
   use_best_model: true
   eval_metric: RMSE
+  depth: 6
+  iterations: 2000
+  od_type: "Iter" 
+  od_wait: 32
