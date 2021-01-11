@@ -1,0 +1,20 @@
+train_data_folds:
+  - /kaggle/input/my-santa-2020-data/top_agents_training_data_210109_3.parquet_3_4.parquet
+val_data_folds:
+  - /kaggle/input/my-santa-2020-data/top_agents_training_data_210109_3.parquet_4_4.parquet
+train_feats:
+  - round_num
+  - n_pulls_opp
+  - n_pulls
+  - n_loss_self
+  - success_rate
+  - pull_rate_self
+  - pull_rate_opp
+  - decay
+  - rank_class
+target: payout
+model_name: top_agents_catboost_regression_model_add_feats2_with_rank_class
+construct_params:
+  use_best_model: true
+  eval_metric: RMSE
+  iterations: 64

@@ -12,4 +12,6 @@ from . import greedy_decision_tree
 from . import greedy_decision_tree_2
 from . import greedy_decision_tree_3
 from . import greedy_decision_tree_4
+from . import greedy_decision_tree_5
+from . import greedy_decision_tree_6
 from . import ucb_decision_tree

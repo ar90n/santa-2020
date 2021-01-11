@@ -41,7 +41,12 @@ enable_internet = true
 is_private = true
 kernel_type = "notebook"
 slug = "santa-2020"
-prologue="!pip install kaggle-environments --upgrade -q"
+
+  [tool.kkt.meta_data.create_submission]
+    prologue="!pip install kaggle-environments --upgrade -q"
+  [tool.kkt.meta_data.train_catboost]
+    code_file = "runner/train_catboost_model.ipynb"
+
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

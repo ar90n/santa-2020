@@ -34,6 +34,7 @@ results = simulate.run(target_agents, enemy_agents).unwrap()
 for k, ret in results.items():
     print(f"{k[0]} vs {k[1]}")
     ret.env.render(mode="ipython", width=800, height=500)
+    #ret.env.render(mode="ansi")
 
 # %%
 io.save_submit(target_agents[0])

@@ -20,15 +20,14 @@
 #%%
 import os
 import sys
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 from pathlib import Path
 import pickle
 from dataclasses import MISSING, dataclass, field
 from santa_2020 import io, util
-import numpy as np
 
 from omegaconf import OmegaConf
-import catboost
+from catboost import CatBoostRegressor, Pool
 
 
 #%%
@@ -39,7 +38,6 @@ class TableModelConfig:
     train_feats: List[str] = MISSING
     target: str = MISSING
     model_name: str = MISSING
-    model_type: Optional[str] = "CatBoostRegressor"
     construct_params: Dict[Any, Any] = field(default_factory=dict)
     train_params: Dict[Any, Any] = field(default_factory=dict)
 
@@ -50,17 +48,10 @@ conf = OmegaConf.create(TableModelConfig(**OmegaConf.load(train_config_path)))
 
 #%%
 def make_sklearn_api_model(train_df, val_df, conf):
-    model_type = conf.model_type
-    model = getattr(catboost, model_type)(**conf.construct_params)
-
-    categorical_features_indices = np.where(
-        (train_df[conf.train_feats].dtypes != np.float)
-        & (train_df[conf.train_feats].dtypes != np.int)
-    )[0]
+    model = CatBoostRegressor(**conf.construct_params)
     model.fit(
         train_df[conf.train_feats],
         train_df[conf.target],
-        cat_features=categorical_features_indices,
         eval_set=(val_df[conf.train_feats], val_df[conf.target]),
         **conf.train_params,
     )
@@ -69,22 +60,19 @@ def make_sklearn_api_model(train_df, val_df, conf):
 
 #%%
 train_df, val_df, = io.load_dataset(conf.train_data_folds, conf.val_data_folds)
-model = make_sklearn_api_model(train_df, val_df, conf)
+model = pickle.loads(Path("/kaggle/input/my-santa-2020-data/top_agents_catboost_regression_model_add_feats_depth_6.pickle").read_bytes())
 
 #%%
-model.save_model(f"{conf.model_name}.cbm")
+Path(f"before.pickle").write_bytes(pickle.dumps(model))
 
 # %%
-categorical_features_indices = np.where(
-    (train_df[conf.train_feats].dtypes != np.float)
-    & (train_df[conf.train_feats].dtypes != np.int)
-)[0]
-pool = catboost.Pool(
-    val_df[conf.train_feats],
-    val_df[conf.target],
-    cat_features=categorical_features_indices,
-)
+pool = Pool(val_df[conf.train_feats], val_df[conf.target])
 feature_importances = model.get_feature_importance(pool)
 feature_names = train_df[conf.train_feats].columns
 for score, name in sorted(zip(feature_importances, feature_names), reverse=True):
-    print("{}: {}".format(name, score))
+    print('{}: {}'.format(name, score))
+
+
+#%%
+Path(f"after.pickle").write_bytes(pickle.dumps(model))
+

@@ -1,0 +1,6 @@
+agent:
+  key: greedy_decision_tree_6
+  resource:
+    reg_model@catboost: "/kaggle/input/my-santa-2020-data/top_agents_catboost_regression_model_add_feats2_with_rank_class.cbm"
+    cls_model@catboost_cls: "/kaggle/input/my-santa-2020-data/top_agents_catboost_classification_model_add_feats2_depth_4.cbm"
+  name: top_agents_catboost_add_feats2

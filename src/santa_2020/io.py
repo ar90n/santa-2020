@@ -1,4 +1,5 @@
 from __future__ import annotations
+from types import ClassMethodDescriptorType
 
 from typing import Optional, Any
 from pandas.io.parquet import read_parquet
@@ -11,6 +12,18 @@ import pandas as pd
 
 from santa_2020 import agents
 
+def add_features(df: pd.DataFrame) -> pd.DataFrame:
+    df["n_pulls"] = df["n_pulls_self"] + df["n_pulls_opp"]
+    df["n_loss_self"] = df["n_pulls_self"] - df["n_success_self"]
+    df["success_rate"] = df["n_success_self"] / (df["n_pulls_self"] + 1e-12)
+    df["self_opp_pulls_rate"] = df["n_pulls_self"] / (df["n_pulls_opp"] + 1e-12)
+    df["pull_rate_self"] = df["n_pulls_self"] / (df["round_num"] + 1e-12)
+    df["pull_rate_opp"] = df["n_pulls_opp"] / (df["round_num"] + 1e-12)
+    df["conf_success_rate"] = df["conf_success"] / (df["conf_pulls"] + 1e-12)
+    df["rank_class"] = pd.cut(df["rank"], [0, 30, 60, 100], right=False, labels=[0, 1, 2])
+    df["decay"] = df["n_pulls"].rpow(0.97)
+    return df
+
 
 def load_dataset(
     train_folds: list[Path], val_folds: list[Path],
@@ -18,24 +31,12 @@ def load_dataset(
     train_df = pd.concat(
         [pd.read_parquet(p) for p in train_folds], axis=0, ignore_index=True
     )
-    train_df["n_pulls"] = train_df["n_pulls_self"] + train_df["n_pulls_opp"]
-    train_df["n_loss_self"] = train_df["n_pulls_self"] - train_df["n_success_self"]
-    train_df["success_rate"] = train_df["n_success_self"] / train_df["n_pulls_self"]
-    train_df["self_opp_pulls_rate"] = train_df["n_pulls_self"] / train_df["n_pulls_opp"]
-    train_df["pull_rate_self"] = train_df["n_pulls_self"] / train_df["round_num"]
-    train_df["pull_rate_opp"] = train_df["n_pulls_opp"] / train_df["round_num"]
-    train_df["decay"] = train_df["n_pulls"].rpow(0.97)
+    train_df = add_features(train_df)
 
     val_df = pd.concat(
         [pd.read_parquet(p) for p in val_folds], axis=0, ignore_index=True
     )
-    val_df["n_pulls"] = val_df["n_pulls_self"] + val_df["n_pulls_opp"]
-    val_df["n_loss_self"] = val_df["n_pulls_self"] - val_df["n_success_self"]
-    val_df["success_rate"] = val_df["n_success_self"] / val_df["n_pulls_self"]
-    val_df["self_opp_pulls_rate"] = val_df["n_pulls_self"] / val_df["n_pulls_opp"]
-    val_df["pull_rate_self"] = val_df["n_pulls_self"] / val_df["round_num"]
-    val_df["pull_rate_opp"] = val_df["n_pulls_opp"] / val_df["round_num"]
-    val_df["decay"] = val_df["n_pulls"].rpow(0.97)
+    val_df = add_features(val_df)
     return (train_df, val_df)
 
 
@@ -46,6 +47,18 @@ def load_agent_conf(config_path: Path) -> dict:
                 k, t = key.split("@")
                 if t == "pickle":
                     content = pickle.loads(Path(value).read_bytes())
+                    return (k, content)
+                elif t == "catboost":
+                    from catboost import CatBoostRegressor
+
+                    content = CatBoostRegressor()
+                    content.load_model(value)
+                    return (k, content)
+                elif t == "catboost_cls":
+                    from catboost import CatBoostClassifier
+
+                    content = CatBoostClassifier()
+                    content.load_model(value)
                     return (k, content)
                 raise ValueError(f"Unknow value type:{t}")
 

@@ -1,0 +1,28 @@
+train_data_folds:
+  - /kaggle/input/my-santa-2020-data/top_agents_training_data_210109.parquet_0_4.parquet
+  - /kaggle/input/my-santa-2020-data/top_agents_training_data_210109.parquet_1_4.parquet
+  - /kaggle/input/my-santa-2020-data/top_agents_training_data_210109.parquet_2_4.parquet
+  - /kaggle/input/my-santa-2020-data/top_agents_training_data_210109.parquet_3_4.parquet
+val_data_folds:
+  - /kaggle/input/my-santa-2020-data/top_agents_training_data_210109.parquet_4_4.parquet
+train_feats:
+  - round_num
+  - n_pulls_self
+  - n_success_self
+  - n_pulls_opp
+  - conf_pulls
+  - conf_success
+  - conf_success_rate
+  - n_pulls
+  - n_loss_self
+  - success_rate
+  - self_opp_pulls_rate
+  - pull_rate_self
+  - pull_rate_opp
+  - decay
+target: rank_class
+model_name: top_agents_catboost_classification_model_add_feats2
+model_type: CatBoostClassifier
+construct_params:
+  use_best_model: true
+  eval_metric: MCC
